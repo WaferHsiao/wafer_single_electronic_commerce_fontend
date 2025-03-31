@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1>Welcome to the Home Page</h1>
+      <h1>Welcome to the Wafer_Hsiao Home Page</h1>
     </div>
   </template>
   
