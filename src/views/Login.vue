@@ -14,7 +14,7 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="注册" name="register">
+      <el-tab-pane label="注册wafer" name="register">
         <el-form :model="registerForm" @submit.native.prevent="register">
           <el-form-item>
             <el-input v-model="registerForm.email" placeholder="邮箱" prefix-icon="el-icon-mobile"></el-input>
