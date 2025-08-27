@@ -1,96 +1,92 @@
 <template>
-<div class="container">
-    <el-card class="form-card">
-      <div style="text-align: center; font-size: 20px; margin-bottom: 20px;">
-        {{isLogin ? '登录' : '注册'}}
+<el-card class="login-card">
+  <div style="text-align: center; font-size: 20px; margin-bottom:20px;">
+    {{isRegister?'注册' : '登录'}}
+  </div>
+  <el-form :model="form" label-width="100px">
+    <el-form-item label="username">
+      <el-input v-model="form.username"></el-input>
+    </el-form-item>
+    <el-form-item label="password">
+      <el-input type= "password" v-model="form.password"></el-input>
+    </el-form-item>
+
+    <!-- 只有注册时才显示-->
+    <el-form-item v-if="isRegister" label="ConfirmPssword">
+      <el-input type="password" v-model="form.confirmPassword"></el-input>
+    </el-form-item>
+
+    <el-form-item>
+      <div class="btn-container">
+      <el-button type="primary" @click="handleSubmit">
+        {{isRegister ? '注册': '登录'}}
+      </el-button>
+        <el-link type="primary" @click="isRegister = !isRegister">
+          {{isRegister ? '已有账号？去登录' : '没有账号，去注册'}}
+        </el-link>
       </div>
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码"></el-input>
-        </el-form-item>
-        <el-form-item class = "button_item">
-          <el-button type="primary" @click="submitForm" style="width: 100px;">
-            {{isLogin?'登录':'注册'}}
-          </el-button>
-        </el-form-item>
-        <el-form-item class = "button_item">
-          <el-button type="text" @click="toggleForm">
-            切换为{{isLogin?'注册':'登录'}}
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
-</div>
+    </el-form-item>
+  </el-form>
+</el-card>
 </template>
 
+
 <script setup>
-import {reactive , ref } from 'vue';
-import {ElMessage} from 'element-plus';
-import axios from 'axios';
+import {reactive,ref} from 'vue'
+import { login , register } from '@/api/api'
+import {ElMessage} from "element-plus";
 
-const isLogin = ref(true);
-const formRef = ref();
-
+const isRegister = ref(false) //false登录  true注册
 const form = reactive({
-  username:'',
-  password:''
-});
+  username: '',
+  password: '',
+  confirmPassword: ''
+})
 
-const rules = {
-  username:[{require:true,message:'请输入用户名',trigger:'blur'}],
-  password:[{require:true,message:'请输入密码',trigger:'blur'}]
-};
+const handleSubmit = () => {
+  if(isRegister.value){
+    register(form)
+        .then(res=>{
+          console.log('注册返回信息',res)
+          if(res.data.code != 200){
+            ElMessage.error(res.data.message)
+          }else{
+            ElMessage.success('注册成功！')
+          }
+        })
+        .catch(() => {
+          ElMessage.error('请求失败，请检查网络')
+        })
+    console.log('注册信息',form)
 
-const toggleForm = () => {
-  isLogin.value = !isLogin.value;
-  form.username = '';
-  form.password = '';
-};
-
-const submitForm = () => {
-  formRef.value.validate(async valid => {
-    if(!valid) {
-      return;
-    }
-
-    const url = isLogin.value ? '/api/login' : '/api/register';
-    try{
-      const response = await axios.post(url,form);
-      ElMessage.success(response.data.message || (isLogin.value ? '登录成功':'注册成功'));
-      //登录成功后跳转
-      if(isLogin.value){
-        window.location.href = '/Home';
-      }
-    }catch (error){
-      ElMessage.error(error.response?.data?.message || '操作失败');
-    }
-  })
+  }else{
+    login(form)
+        .then(res=>{
+          console.log('登录返回信息',res)
+          if(res.data.code != 200){
+            ElMessage.error(res.data.message)
+          }else{
+            ElMessage.success('登录成功！')
+          }
+        })
+        .catch(() => {
+          ElMessage.error('请求失败，请检查网络')
+        })
+    console.log('登录信息',form)
+  }
 }
 </script>
 
 <style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f2f5;
-}
-
-.form-card {
+.login-card{
   width: 400px;
-  padding: 30px 20px;
+  margin: 100px auto;
+  padding: 20px;
 }
 
-.button_item {
+.btn-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* 纵向排列：按钮在上，文字在下 */
+  align-items: center;   /* 居中对齐 */
 }
-
-
-
-
 </style>
