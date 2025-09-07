@@ -4,8 +4,8 @@
     {{isRegister?'注册' : '登录'}}
   </div>
   <el-form :model="form" label-width="100px">
-    <el-form-item label="username">
-      <el-input v-model="form.username"></el-input>
+    <el-form-item label="email">
+      <el-input v-model="form.email"></el-input>
     </el-form-item>
     <el-form-item label="password">
       <el-input type= "password" v-model="form.password"></el-input>
@@ -38,7 +38,7 @@ import {ElMessage} from "element-plus";
 
 const isRegister = ref(false) //false登录  true注册
 const form = reactive({
-  username: '',
+  email: '',
   password: '',
   confirmPassword: ''
 })
